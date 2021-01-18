@@ -1,30 +1,57 @@
-# Arfundation 起手勢
-資料來源[https://www.youtube.com/watch?v=jBRxY2KnrUs](https://)
-## 1.安裝套件
-![](https://i.imgur.com/cKjTGmD.png)
-## 2.Project setting /player
-![](https://i.imgur.com/Su9Ig2x.png)
-### 2.1.1 ios 設定攝影機啟動與提示字
-![](https://i.imgur.com/iHM10qX.png)
-### 2.1.2 ios SDK 設定11以上的版本
-![](https://i.imgur.com/PD1xs4u.png)
-### 2.1.3 Architecture設定為Arm64
-![](https://i.imgur.com/22QBKCC.png)
-
-### 2.2.1 Android 刪除Vulkan 只剩下OpenGLES3
-![](https://i.imgur.com/uGUG4p7.png)
-### 2.2.2 Android SDK 選擇24(android 7.0)以上
-![](https://i.imgur.com/H0BO914.png)
-
-### 2.3 管理 XR Plug-in 選定引擎
-Android選擇Arcore
-![](https://i.imgur.com/R0GW451.png)
-IOS選擇Arkit
-![](https://i.imgur.com/ZrUqkNT.png)
+參考
+https://www.youtube.com/watch?v=ylLP09RG_3g&list=LL&index=2
 
 
 
+# 點螢幕新增物件
+## 1.AR Session origin加入ARRaycastManager  
+![](https://i.imgur.com/8B4DZKu.png)
+## 新增ArTouchAddObj 自己撰寫的程式
+![](https://i.imgur.com/6NSjb67.png)
+1.這個程式點選螢幕之後會 Instantiate 一個物件，所以自己新增一個prefab物件拖曳到這裡來，就可以再點選螢幕之後，新增．  
+2.拖入ARRaycastManager 
 
 
+```
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+
+public class ArTouchAddObj : MonoBehaviour
+{
+    public GameObject Obj;
+    public ARRaycastManager mARRaycastManager;
+    private List<ARRaycastHit> m_hit = new List<ARRaycastHit>();
+    void Start()
+    {
+        
+    }
 
 
+    void Update()
+    {
+
+        if (Input.touchCount > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                if (mARRaycastManager.Raycast(t.position, m_hit, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon))
+                {
+                    Pose hitP = m_hit[0].pose;
+                    Instantiate(Obj, hitP.position, hitP.rotation);
+                }
+            }
+        }
+
+    }
+}
+```
+
+
+# people occulision
+## 在 AR Camera下增加AR Occlusion manager 就可以啟動 人體遮罩
+
+![](https://i.imgur.com/lwH3SHT.png)
+![](https://i.imgur.com/HUlHRVt.png)
